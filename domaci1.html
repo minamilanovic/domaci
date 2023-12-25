@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .quantity-buttons {
+            display: flex;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="itemListContainer"></div>
+
+<script>
+
+let items = [
+    { "naziv": "Chair", "komada": 1, "cena": 233 },
+    { "naziv": "Car", "komada": 3, "cena": 324 },
+    { "naziv": "Computer", "komada": 2, "cena": 319 },
+    { "naziv": "Chair", "komada": 3, "cena": 405 },
+    { "naziv": "Pizza", "komada": 3, "cena": 121 },
+    { "naziv": "Chips", "komada": 3, "cena": 58 },
+    { "naziv": "Table", "komada": 2, "cena": 324 },
+    { "naziv": "Sausages", "komada": 3, "cena": 204 },
+    { "naziv": "Pants", "komada": 3, "cena": 335 },
+    { "naziv": "Table", "komada": 1, "cena": 350 }
+];
+
+// dinamicko renderovanje jednog reda
+function renderSingleItem(item) {
+    const quantityButtons = `
+        <div class="quantity-buttons">
+            <button onclick="decreaseQuantity(${item.komada}, ${item.cena}, ${items.indexOf(item)})">-</button>
+            <button onclick="increaseQuantity(${item.komada}, ${item.cena}, ${items.indexOf(item)})">+</button>
+        </div>
+    `;
+
+    return `
+        <tr>
+            <td>${item.naziv}</td>
+            <td>${item.komada}</td>
+            <td>${quantityButtons}</td>
+            <td>${item.cena}</td>
+            <td>${calculateTotalPricePerItem(item)}</td>
+        </tr>
+    `;
+}
+
+// dinamicko renderovanje cele liste items
+function renderItemList() {
+    const tableHeader = `
+        <table>
+            <tr>
+                <th>Naziv</th>
+                <th>Komada</th>
+                <th></th>
+                <th>Cena po komadu</th>
+                <th>Ukupna Cena</th>
+            </tr>
+    `;
+
+    const tableFooter = `
+        <tr>
+            <td colspan="4">Ukupna cena tabele</td>
+            <td>${calculateTotalPriceOfItemList()}</td>
+        </tr>
+        </table>
+    `;
+
+    let tableContent = '';
+    items.forEach(item => {
+        tableContent += renderSingleItem(item);
+    });
+
+    document.getElementById("itemListContainer").innerHTML = tableHeader + tableContent + tableFooter;
+}
+
+// jedan red
+function calculateTotalPricePerItem(item) {
+    return item.komada * item.cena;
+}
+
+// ukupna cena
+function calculateTotalPriceOfItemList() {
+    let total = 0;
+    items.forEach(item => {
+        total += calculateTotalPricePerItem(item);
+    });
+    return total;
+}
+
+// -
+function decreaseQuantity(currentQuantity, price, index) {
+    if (currentQuantity > 0) {
+        items[index].komada--;
+        renderItemList();
+    } else {
+        console.log("Broj komada ne može biti manji od 0.");
+    }
+}
+
+// +
+function increaseQuantity(currentQuantity, price, index) {
+    items[index].komada++;
+    renderItemList();
+}
+
+renderItemList();
+</script>
+</body>
+</html>
